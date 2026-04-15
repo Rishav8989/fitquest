@@ -18,7 +18,7 @@ class DatabaseHelper {
   Future<Database> _initDB(String filePath) async {
     final dbPath = await getDatabasesPath();
     final path = join(dbPath, filePath);
-    return await openDatabase(path, version: 3, onCreate: _createDB, onUpgrade: _upgradeDB);
+    return await openDatabase(path, version: 5, onCreate: _createDB, onUpgrade: _upgradeDB);
   }
 
   Future _createDB(Database db, int version) async {
@@ -100,6 +100,40 @@ class DatabaseHelper {
         )
       ''');
     }
+    if (oldVersion < 4) {
+      await db.execute('ALTER TABLE exercise_logs ADD COLUMN sets INTEGER');
+      await db.execute('ALTER TABLE exercise_logs ADD COLUMN reps INTEGER');
+      await db.execute('ALTER TABLE exercise_logs ADD COLUMN weight REAL');
+    }
+    if (oldVersion < 5) {
+      await db.execute('ALTER TABLE exercise_logs ADD COLUMN sessionId TEXT');
+      await db.execute('''
+        CREATE TABLE body_measurements(
+          id INTEGER PRIMARY KEY AUTOINCREMENT,
+          date TEXT NOT NULL,
+          weight REAL NOT NULL,
+          chest REAL NOT NULL,
+          waist REAL NOT NULL,
+          arms REAL NOT NULL,
+          thighs REAL NOT NULL,
+          bodyFat REAL
+        )
+      ''');
+    }
+  }
+
+  // Body Measurements CRUD
+  Future<int> addMeasurement(BodyMeasurement measurement) async {
+    final db = await instance.database;
+    return await db.insert('body_measurements', measurement.toJson()..remove('id'));
+  }
+
+  Future<List<BodyMeasurement>> getMeasurements() async {
+    final db = await instance.database;
+    final maps = await db.query('body_measurements', orderBy: 'date ASC');
+    return List.generate(maps.length, (i) {
+      return BodyMeasurement.fromJson(maps[i]);
+    });
   }
 
   // Food Log CRUD

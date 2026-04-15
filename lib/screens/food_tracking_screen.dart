@@ -1,4 +1,4 @@
-import 'package:fitquest/screens/add_food_screen.dart';
+import 'package:fitquest/screens/ai_food_questionnaire_screen.dart';
 import 'package:fitquest/widgets/daily_summary.dart';
 import 'package:fitquest/widgets/food_log.dart';
 import 'package:fitquest/widgets/water_tracker.dart';
@@ -31,7 +31,7 @@ class FoodTrackingScreen extends StatelessWidget {
                     Navigator.push(
                       context,
                       MaterialPageRoute(
-                        builder: (context) => const AddFoodScreen(),
+                        builder: (context) => const AiFoodQuestionnaireScreen(),
                       ),
                     );
                   },

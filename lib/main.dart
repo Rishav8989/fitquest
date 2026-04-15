@@ -11,8 +11,9 @@ import 'package:fitquest/screens/workouts_screen.dart';
 import 'package:fitquest/screens/food_tracking_screen.dart';
 import 'package:fitquest/screens/profile_screen.dart';
 import 'package:fitquest/screens/edit_profile_screen.dart';
-import 'package:fitquest/screens/add_exercise_screen.dart';
-import 'package:fitquest/screens/add_food_screen.dart';
+import 'package:fitquest/screens/ai_food_questionnaire_screen.dart';
+import 'package:fitquest/screens/ai_exercise_questionnaire_screen.dart';
+import 'package:fitquest/screens/quick_add_screen.dart';
 import 'package:lucide_icons/lucide_icons.dart';
 import 'package:tutorial_coach_mark/tutorial_coach_mark.dart';
 import 'package:provider/provider.dart';
@@ -114,7 +115,6 @@ class _HomeScreenState extends State<HomeScreen> {
     if (isFirstRun) {
       Future.delayed(const Duration(milliseconds: 500), () async {
         if (context.mounted) {
-          final appState = Provider.of<AppState>(context, listen: false);
           await Navigator.push(context, MaterialPageRoute(builder: (context) => const EditProfileScreen(isOnboarding: true)));
           if (context.mounted) {
             _askForTutorial();
@@ -404,34 +404,6 @@ class _HomeScreenState extends State<HomeScreen> {
     });
   }
 
-  void _showQuickAddMenu(BuildContext context) {
-    showModalBottomSheet(
-      context: context,
-      builder: (BuildContext context) {
-        return Wrap(
-          children: <Widget>[
-            ListTile(
-              leading: const Icon(LucideIcons.utensilsCrossed),
-              title: const Text('Add Food'),
-              onTap: () {
-                Navigator.pop(context);
-                Navigator.push(context, MaterialPageRoute(builder: (context) => const AddFoodScreen()));
-              },
-            ),
-            ListTile(
-              leading: const Icon(LucideIcons.dumbbell),
-              title: const Text('Add Exercise'),
-              onTap: () {
-                Navigator.pop(context);
-                Navigator.push(context, MaterialPageRoute(builder: (context) => const AddExerciseScreen()));
-              },
-            ),
-          ],
-        );
-      },
-    );
-  }
-
   @override
   Widget build(BuildContext context) {
     final themeProvider = Provider.of<ThemeProvider>(context);
@@ -509,11 +481,11 @@ class _HomeScreenState extends State<HomeScreen> {
         selectedIndex: _selectedIndex,
         onPressed: () {
           if (_selectedIndex == 0) {
-            _showQuickAddMenu(context);
+            Navigator.push(context, MaterialPageRoute(builder: (context) => const QuickAddScreen()));
           } else if (_selectedIndex == 2) {
-            Navigator.push(context, MaterialPageRoute(builder: (context) => const AddFoodScreen()));
+            Navigator.push(context, MaterialPageRoute(builder: (context) => const AiFoodQuestionnaireScreen()));
           } else if (_selectedIndex == 1) {
-            Navigator.push(context, MaterialPageRoute(builder: (context) => const AddExerciseScreen()));
+            Navigator.push(context, MaterialPageRoute(builder: (context) => const AiExerciseQuestionnaireScreen()));
           }
         },
       ),

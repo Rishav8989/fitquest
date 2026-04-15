@@ -1,4 +1,4 @@
-import 'package:fitquest/screens/exercise_selection_screen.dart';
+import 'package:fitquest/screens/ai_exercise_questionnaire_screen.dart';
 import 'package:fitquest/screens/timer_screen.dart';
 import 'package:fitquest/widgets/activity_tracker.dart';
 import 'package:fitquest/widgets/animated_scale_tap.dart';
@@ -54,7 +54,7 @@ class WorkoutsScreen extends StatelessWidget {
                     onTap: () {
                       Navigator.of(context).push(
                         MaterialPageRoute(
-                          builder: (context) => const ExerciseSelectionScreen(),
+                          builder: (context) => const AiExerciseQuestionnaireScreen(),
                         ),
                       );
                     },

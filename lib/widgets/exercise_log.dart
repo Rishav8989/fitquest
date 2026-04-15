@@ -31,14 +31,23 @@ class ExerciseLog extends StatelessWidget {
                 ...exercises.asMap().entries.map((entry) {
                   final i = entry.key;
                   final exercise = entry.value;
+                  String subtitle = '${exercise.duration} min - ${exercise.calories} kcal';
+                  if (exercise.sets != null && exercise.reps != null) {
+                    subtitle += '\n${exercise.sets} sets x ${exercise.reps} reps';
+                    if (exercise.weight != null) {
+                      subtitle += ' @ ${exercise.weight} kg';
+                    }
+                  } else if (exercise.weight != null) {
+                    subtitle += '\n${exercise.weight} kg';
+                  }
+
                   return ListTile(
                     leading: Icon(
                       _getExerciseIcon(exercise.type),
                       color: cs.secondary,
                     ),
                     title: Text(exercise.name),
-                    subtitle: Text(
-                        '${exercise.duration} min - ${exercise.calories} kcal'),
+                    subtitle: Text(subtitle),
                     trailing: IconButton(
                       icon: Icon(LucideIcons.trash, color: cs.error),
                       onPressed: () async {

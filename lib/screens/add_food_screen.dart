@@ -2,25 +2,11 @@ import 'package:fitquest/services/app_state.dart';
 import 'package:fitquest/widgets/confirm_dialog.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:fitquest/data/massive_datasets.dart';
 
 const _mealTypes = ['Breakfast', 'Lunch', 'Dinner', 'Snack'];
 
-final _indianMeals = [
-  ('Idli (2 pcs)', 120, 4, 22, 2, 2, '2 pcs'),
-  ('Dosa', 150, 3, 28, 4, 2, '1 piece'),
-  ('Poha', 250, 6, 45, 8, 3, '1 bowl'),
-  ('Upma', 200, 5, 30, 6, 2, '1 bowl'),
-  ('Paratha', 280, 8, 35, 10, 3, '1 piece'),
-  ('Dal Rice', 350, 12, 55, 8, 5, '1 plate'),
-  ('Rajma Chawal', 400, 15, 60, 10, 8, '1 plate'),
-  ('Chole Bhature', 450, 12, 55, 18, 6, '1 serving'),
-  ('Biryani', 500, 18, 65, 15, 2, '1 plate'),
-  ('Samosa (2 pcs)', 300, 5, 35, 15, 3, '2 pcs'),
-  ('Chaat', 200, 6, 28, 8, 4, '1 plate'),
-  ('Apple', 95, 0, 25, 0, 4, '1 medium'),
-  ('Banana', 105, 1, 27, 0, 3, '1 medium'),
-  ('Chicken Salad', 350, 30, 10, 20, 5, '1 bowl'),
-];
+
 
 class AddFoodScreen extends StatefulWidget {
   const AddFoodScreen({super.key});
@@ -30,14 +16,46 @@ class AddFoodScreen extends StatefulWidget {
 }
 
 class _AddFoodScreenState extends State<AddFoodScreen> {
-  String name = _indianMeals.first.$1;
-  int calories = _indianMeals.first.$2;
-  int protein = _indianMeals.first.$3;
-  int carbs = _indianMeals.first.$4;
-  int fat = _indianMeals.first.$5;
-  int fiber = _indianMeals.first.$6;
-  String serving = _indianMeals.first.$7;
+  String? presetName;
   String mealType = _mealTypes.first;
+
+  final _formKey = GlobalKey<FormState>();
+
+  final _nameCtrl = TextEditingController();
+  final _calCtrl = TextEditingController();
+  final _proCtrl = TextEditingController();
+  final _carbCtrl = TextEditingController();
+  final _fatCtrl = TextEditingController();
+  final _fibCtrl = TextEditingController();
+  final _srvCtrl = TextEditingController();
+
+  @override
+  void initState() {
+    super.initState();
+    // Start empty, let user search
+  }
+
+  void _fillWithPreset(Map<String, dynamic> m) {
+    _nameCtrl.text = m['name'];
+    _calCtrl.text = m['calories'].toString();
+    _proCtrl.text = m['protein'].toString();
+    _carbCtrl.text = m['carbs'].toString();
+    _fatCtrl.text = m['fat'].toString();
+    _fibCtrl.text = m['fiber'].toString();
+    _srvCtrl.text = m['serving'];
+  }
+
+  @override
+  void dispose() {
+    _nameCtrl.dispose();
+    _calCtrl.dispose();
+    _proCtrl.dispose();
+    _carbCtrl.dispose();
+    _fatCtrl.dispose();
+    _fibCtrl.dispose();
+    _srvCtrl.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -47,53 +65,119 @@ class _AddFoodScreenState extends State<AddFoodScreen> {
       ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16),
-        child: Column(
-          children: [
-            DropdownButtonFormField<String>(
-              value: name,
-              decoration: const InputDecoration(
-                labelText: 'Food',
+        child: Form(
+          key: _formKey,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              Autocomplete<Map<String, dynamic>>(
+                displayStringForOption: (option) => option['name'],
+                optionsBuilder: (TextEditingValue textEditingValue) {
+                  if (textEditingValue.text.isEmpty) {
+                    return const Iterable<Map<String, dynamic>>.empty();
+                  }
+                  return MassiveDatasets.foods.where((food) {
+                    return food['name'].toString().toLowerCase().contains(
+                          textEditingValue.text.toLowerCase(),
+                        );
+                  });
+                },
+                onSelected: (Map<String, dynamic> selection) {
+                  setState(() {
+                    _fillWithPreset(selection);
+                  });
+                },
+                fieldViewBuilder: (context, textEditingController, focusNode, onFieldSubmitted) {
+                  // Bind the external _nameCtrl to internal controller if empty to allow validation sync
+                  textEditingController.addListener(() {
+                    _nameCtrl.text = textEditingController.text;
+                  });
+                  return TextFormField(
+                    controller: textEditingController,
+                    focusNode: focusNode,
+                    decoration: const InputDecoration(
+                      labelText: 'Search Food Database or enter Custom...',
+                      prefixIcon: Icon(Icons.search),
+                    ),
+                    validator: (v) => v == null || v.isEmpty ? 'Required' : null,
+                  );
+                },
               ),
-              items: _indianMeals
-                  .map((m) => DropdownMenuItem(
-                        value: m.$1,
-                        child: Text(m.$1),
-                      ))
-                  .toList(),
-              onChanged: (v) {
-                if (v == null) return;
-                final m = _indianMeals.firstWhere((e) => e.$1 == v);
-                setState(() {
-                  name = m.$1;
-                  calories = m.$2;
-                  protein = m.$3;
-                  carbs = m.$4;
-                  fat = m.$5;
-                  fiber = m.$6;
-                  serving = m.$7;
-                });
-              },
-            ),
-            const SizedBox(height: 12),
-            DropdownButtonFormField<String>(
-              value: mealType,
-              decoration: const InputDecoration(
-                labelText: 'Meal type',
+              const SizedBox(height: 12),
+              DropdownButtonFormField<String>(
+                value: mealType,
+                decoration: const InputDecoration(
+                  labelText: 'Meal type',
+                ),
+                items: _mealTypes
+                    .map((t) => DropdownMenuItem(
+                          value: t,
+                          child: Text(t),
+                        ))
+                    .toList(),
+                onChanged: (v) => setState(() => mealType = v ?? mealType),
               ),
-              items: _mealTypes
-                  .map((t) => DropdownMenuItem(
-                        value: t,
-                        child: Text(t),
-                      ))
-                  .toList(),
-              onChanged: (v) => setState(() => mealType = v ?? mealType),
-            ),
-            const SizedBox(height: 8),
-            Text(
-              '$calories kcal · P: $protein C: $carbs F: $fat · $serving',
-              style: Theme.of(context).textTheme.bodySmall,
-            ),
-          ],
+              const SizedBox(height: 12),
+              TextFormField(
+                controller: _srvCtrl,
+                decoration: const InputDecoration(labelText: 'Serving (e.g. 1 bowl, 200g)'),
+                validator: (v) => v == null || v.isEmpty ? 'Required' : null,
+              ),
+              const SizedBox(height: 12),
+              Row(
+                children: [
+                  Expanded(
+                    child: TextFormField(
+                      controller: _calCtrl,
+                      decoration: const InputDecoration(labelText: 'Calories'),
+                      keyboardType: TextInputType.number,
+                      validator: (v) => int.tryParse(v ?? '') == null ? 'Invalid' : null,
+                    ),
+                  ),
+                  const SizedBox(width: 8),
+                  Expanded(
+                    child: TextFormField(
+                      controller: _proCtrl,
+                      decoration: const InputDecoration(labelText: 'Protein (g)'),
+                      keyboardType: TextInputType.number,
+                      validator: (v) => int.tryParse(v ?? '') == null ? 'Invalid' : null,
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 12),
+              Row(
+                children: [
+                  Expanded(
+                    child: TextFormField(
+                      controller: _carbCtrl,
+                      decoration: const InputDecoration(labelText: 'Carbs (g)'),
+                      keyboardType: TextInputType.number,
+                      validator: (v) => int.tryParse(v ?? '') == null ? 'Invalid' : null,
+                    ),
+                  ),
+                  const SizedBox(width: 8),
+                  Expanded(
+                    child: TextFormField(
+                      controller: _fatCtrl,
+                      decoration: const InputDecoration(labelText: 'Fat (g)'),
+                      keyboardType: TextInputType.number,
+                      validator: (v) => int.tryParse(v ?? '') == null ? 'Invalid' : null,
+                    ),
+                  ),
+                  const SizedBox(width: 8),
+                  Expanded(
+                    child: TextFormField(
+                      controller: _fibCtrl,
+                      decoration: const InputDecoration(labelText: 'Fiber (g)'),
+                      keyboardType: TextInputType.number,
+                      validator: (v) => int.tryParse(v ?? '') == null ? 'Invalid' : null,
+                    ),
+                  ),
+                ],
+              ),
+            ],
+          ),
         ),
       ),
       bottomNavigationBar: BottomAppBar(
@@ -107,26 +191,31 @@ class _AddFoodScreenState extends State<AddFoodScreen> {
             const SizedBox(width: 8),
             FilledButton(
               onPressed: () async {
-                final item = FoodItem(
-                  name: name,
-                  calories: calories,
-                  protein: protein,
-                  carbs: carbs,
-                  fat: fat,
-                  fiber: fiber,
-                  serving: serving,
-                  mealType: mealType,
-                  date: DateTime.now().toIso8601String(),
-                );
-                final ok = await showConfirmDialog(
-                  context,
-                  title: 'Add food?',
-                  message: 'Add "$name" ($calories kcal) to your log?',
-                  confirmText: 'Add',
-                );
-                if (ok && context.mounted) {
-                  await context.read<AppState>().addFood(item);
-                  Navigator.of(context).pop();
+                if (_formKey.currentState?.validate() == true) {
+                  final nameVal = _nameCtrl.text;
+                  final calVal = int.parse(_calCtrl.text);
+                  
+                  final item = FoodItem(
+                    name: nameVal,
+                    calories: calVal,
+                    protein: int.parse(_proCtrl.text),
+                    carbs: int.parse(_carbCtrl.text),
+                    fat: int.parse(_fatCtrl.text),
+                    fiber: int.parse(_fibCtrl.text),
+                    serving: _srvCtrl.text,
+                    mealType: mealType,
+                    date: DateTime.now().toIso8601String(),
+                  );
+                  final ok = await showConfirmDialog(
+                    context,
+                    title: 'Add food?',
+                    message: 'Add "$nameVal" ($calVal kcal) to your log?',
+                    confirmText: 'Add',
+                  );
+                  if (ok && context.mounted) {
+                    await context.read<AppState>().addFood(item);
+                    Navigator.of(context).pop();
+                  }
                 }
               },
               child: const Text('Add'),

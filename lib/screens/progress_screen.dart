@@ -1,5 +1,7 @@
 import 'package:fitquest/screens/bmi_calculator_screen.dart';
 import 'package:fitquest/screens/calendar_screen.dart';
+import 'package:fitquest/screens/measurements_screen.dart';
+import 'package:fitquest/screens/reports_dashboard_screen.dart';
 import 'package:fitquest/widgets/journey_map.dart';
 import 'package:fitquest/widgets/sleep_tracker.dart';
 import 'package:flutter/material.dart';
@@ -67,16 +69,7 @@ class ProgressScreen extends StatelessWidget {
                 Expanded(
                   child: InkWell(
                     onTap: () {
-                      showDialog(
-                        context: context,
-                        builder: (context) => AlertDialog(
-                          title: const Text('Measurements'),
-                          content: const Text('Measurements tracking feature coming soon!'),
-                          actions: [
-                            TextButton(onPressed: () => Navigator.pop(context), child: const Text('Close'))
-                          ],
-                        ),
-                      );
+                      Navigator.push(context, MaterialPageRoute(builder: (context) => const MeasurementsScreen()));
                     },
                     borderRadius: BorderRadius.circular(20),
                     child: Container(
@@ -129,7 +122,7 @@ class ProgressScreen extends StatelessWidget {
                     subtitle: const Text('View your steps and activity for the week'),
                     trailing: const Icon(Icons.chevron_right),
                     onTap: () {
-                      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Weekly report coming soon!')));
+                      Navigator.push(context, MaterialPageRoute(builder: (context) => const ReportsDashboardScreen()));
                     },
                   ),
                   const Divider(height: 1),

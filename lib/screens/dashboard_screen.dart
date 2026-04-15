@@ -1,4 +1,6 @@
 import 'package:fitquest/screens/sleep_tracking_screen.dart';
+import 'package:fitquest/screens/progress_screen.dart';
+import 'package:fitquest/screens/add_food_screen.dart';
 import 'package:fitquest/services/app_state.dart';
 import 'package:fitquest/widgets/activity_tracker.dart';
 import 'package:fitquest/widgets/animated_counter.dart';
@@ -166,9 +168,37 @@ class QuickStatsGrid extends StatelessWidget {
             Expanded(
               child: AnimatedScaleTap(
                 onTap: () {
-                  ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Keep moving to reach your daily step goal!')));
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                      content: const Text('Keep moving to reach your daily step goal!'),
+                      action: SnackBarAction(
+                        label: 'View',
+                        onPressed: () {
+                          Navigator.push(context, MaterialPageRoute(builder: (context) => const ProgressScreen()));
+                        },
+                      ),
+                    ),
+                  );
                 },
                 child: Container(
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(20),
+                    boxShadow: [
+                      BoxShadow(
+                        color: cs.primary.withOpacity(0.35),
+                        blurRadius: 12,
+                        offset: const Offset(0, 4),
+                      ),
+                    ],
+                    gradient: LinearGradient(
+                      colors: [
+                        cs.primary,
+                        cs.secondary,
+                      ],
+                      begin: Alignment.topLeft,
+                      end: Alignment.bottomRight,
+                    ),
+                  ),
                   child: Padding(
                     padding: const EdgeInsets.all(18.0),
                     child: Column(
@@ -201,7 +231,17 @@ class QuickStatsGrid extends StatelessWidget {
             Expanded(
               child: AnimatedScaleTap(
                 onTap: () {
-                  ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Log your food to track calories!')));
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                      content: const Text('Log your food to track calories!'),
+                      action: SnackBarAction(
+                        label: 'Add',
+                        onPressed: () {
+                          Navigator.push(context, MaterialPageRoute(builder: (context) => const AddFoodScreen()));
+                        },
+                      ),
+                    ),
+                  );
                 },
                 child: Container(
                   decoration: BoxDecoration(

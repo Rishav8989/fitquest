@@ -87,6 +87,10 @@ class Exercise {
   final int calories;
   final String type;
   final DateTime timestamp;
+  final int? sets;
+  final int? reps;
+  final double? weight;
+  final String? sessionId;
 
   Exercise({
     this.id,
@@ -95,6 +99,10 @@ class Exercise {
     required this.calories,
     required this.type,
     required this.timestamp,
+    this.sets,
+    this.reps,
+    this.weight,
+    this.sessionId,
   });
 
   Map<String, dynamic> toJson() => {
@@ -104,6 +112,10 @@ class Exercise {
         'calories': calories,
         'type': type,
         'timestamp': timestamp.toIso8601String(),
+        'sets': sets,
+        'reps': reps,
+        'weight': weight,
+        'sessionId': sessionId,
       };
 
   static Exercise fromJson(Map<String, dynamic> json) => Exercise(
@@ -113,6 +125,54 @@ class Exercise {
         calories: json['calories'] as int,
         type: json['type'] as String,
         timestamp: DateTime.parse(json['timestamp'] as String),
+        sets: json['sets'] as int?,
+        reps: json['reps'] as int?,
+        weight: json['weight'] != null ? (json['weight'] as num).toDouble() : null,
+        sessionId: json['sessionId'] as String?,
+      );
+}
+
+class BodyMeasurement {
+  final int? id;
+  final DateTime date;
+  final double weight;
+  final double chest;
+  final double waist;
+  final double arms;
+  final double thighs;
+  final double? bodyFat;
+
+  BodyMeasurement({
+    this.id,
+    required this.date,
+    required this.weight,
+    required this.chest,
+    required this.waist,
+    required this.arms,
+    required this.thighs,
+    this.bodyFat,
+  });
+
+  Map<String, dynamic> toJson() => {
+        'id': id,
+        'date': date.toIso8601String(),
+        'weight': weight,
+        'chest': chest,
+        'waist': waist,
+        'arms': arms,
+        'thighs': thighs,
+        'bodyFat': bodyFat,
+      };
+
+  static BodyMeasurement fromJson(Map<String, dynamic> json) => BodyMeasurement(
+        id: json['id'] as int?,
+        date: DateTime.parse(json['date'] as String),
+        weight: (json['weight'] as num).toDouble(),
+        chest: (json['chest'] as num).toDouble(),
+        waist: (json['waist'] as num).toDouble(),
+        arms: (json['arms'] as num).toDouble(),
+        thighs: (json['thighs'] as num).toDouble(),
+        bodyFat: json['bodyFat'] != null ? (json['bodyFat'] as num).toDouble() : null,
       );
 }
 
@@ -205,6 +265,7 @@ class AppState extends ChangeNotifier {
   final List<FoodItem> _foods = [];
   final List<Exercise> _exercises = [];
   final List<SleepSession> _sleepSessions = [];
+  final List<BodyMeasurement> _measurements = [];
   UserProfile _profile = UserProfile();
   int _waterIntake = 0;
 
@@ -219,6 +280,7 @@ class AppState extends ChangeNotifier {
   List<FoodItem> get foods => List.unmodifiable(_foods);
   List<Exercise> get exercises => List.unmodifiable(_exercises);
   List<SleepSession> get sleepSessions => List.unmodifiable(_sleepSessions);
+  List<BodyMeasurement> get measurements => List.unmodifiable(_measurements);
   UserProfile get profile => _profile;
   int get waterIntake => _waterIntake;
 
@@ -246,10 +308,12 @@ class AppState extends ChangeNotifier {
     _foods.clear();
     _exercises.clear();
     _sleepSessions.clear();
+    _measurements.clear();
     
     _foods.addAll(await dbHelper.getFoodLogs());
     _exercises.addAll(await dbHelper.getExerciseLogs());
     _sleepSessions.addAll(await dbHelper.getSleepSessions());
+    _measurements.addAll(await dbHelper.getMeasurements());
     _steps = await dbHelper.getTodaySteps();
     
     final userProfile = await dbHelper.getProfile();
@@ -283,6 +347,11 @@ class AppState extends ChangeNotifier {
     await dbHelper.setTodaySteps(steps);
     _steps = await dbHelper.getTodaySteps();
     notifyListeners();
+  }
+
+  Future<void> addMeasurement(BodyMeasurement measurement) async {
+    await dbHelper.addMeasurement(measurement);
+    await _load();
   }
 
   void _seedFoods() async {
