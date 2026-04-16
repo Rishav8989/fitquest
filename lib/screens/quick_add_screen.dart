@@ -2,13 +2,17 @@ import 'package:flutter/material.dart';
 import 'package:lucide_icons/lucide_icons.dart';
 import 'package:fitquest/screens/ai_food_questionnaire_screen.dart';
 import 'package:fitquest/screens/ai_exercise_questionnaire_screen.dart';
+import 'package:fitquest/screens/sleep_tracking_screen.dart';
+import 'package:fitquest/services/app_state.dart';
 import 'package:flutter_animate/flutter_animate.dart';
+import 'package:provider/provider.dart';
 
 class QuickAddScreen extends StatelessWidget {
   const QuickAddScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
+    final cs = Theme.of(context).colorScheme;
     return Scaffold(
       appBar: AppBar(
         title: const Text('Quick Actions'),
@@ -35,7 +39,7 @@ class QuickAddScreen extends StatelessWidget {
                         title: 'Log Meal',
                         subtitle: 'AI Guide & Custom',
                         icon: LucideIcons.utensilsCrossed,
-                        gradientColors: const [Color(0xFFFF9A9E), Color(0xFFFECFEF)],
+                        gradientColors: [cs.primary, cs.secondary],
                         delay: 100.ms,
                         onTap: () {
                           Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => const AiFoodQuestionnaireScreen()));
@@ -48,7 +52,7 @@ class QuickAddScreen extends StatelessWidget {
                         title: 'Workout',
                         subtitle: 'Live Tracking',
                         icon: LucideIcons.dumbbell,
-                        gradientColors: const [Color(0xFFa18cd1), Color(0xFFfbc2eb)],
+                        gradientColors: [cs.secondary, cs.tertiary],
                         delay: 200.ms,
                         onTap: () {
                           Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => const AiExerciseQuestionnaireScreen()));
@@ -65,13 +69,15 @@ class QuickAddScreen extends StatelessWidget {
                     Expanded(
                       child: _HeroCard(
                         title: 'Hydration',
-                        subtitle: '+1 Glass',
+                        subtitle: '+250 ml',
                         icon: LucideIcons.glassWater,
-                        gradientColors: const [Color(0xFF84fab0), Color(0xFF8fd3f4)],
+                        gradientColors: [cs.tertiary, cs.primary],
                         delay: 300.ms,
                         onTap: () {
-                          // Quick increment logic can go here
-                          ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Log Water action coming soon!')));
+                          context.read<AppState>().addWater(250);
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(content: Text('+250 ml water logged!')),
+                          );
                         },
                       ),
                     ),
@@ -79,12 +85,12 @@ class QuickAddScreen extends StatelessWidget {
                     Expanded(
                       child: _HeroCard(
                         title: 'Sleep',
-                        subtitle: 'Manual Entry',
+                        subtitle: 'Track Tonight',
                         icon: LucideIcons.moonStar,
-                        gradientColors: const [Color(0xFFcfd9df), Color(0xFFe2ebf0)],
+                        gradientColors: [cs.primary, cs.tertiary],
                         delay: 400.ms,
                         onTap: () {
-                          ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Log Sleep action coming soon!')));
+                          Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => const SleepTrackingScreen()));
                         },
                       ),
                     ),
@@ -131,7 +137,7 @@ class _HeroCard extends StatelessWidget {
           ),
           boxShadow: [
             BoxShadow(
-              color: gradientColors.last.withValues(alpha: 0.4),
+              color: gradientColors.last.withValues(alpha: 0.3),
               blurRadius: 15,
               offset: const Offset(0, 10),
             )
@@ -143,25 +149,25 @@ class _HeroCard extends StatelessWidget {
           children: [
             Icon(
               icon,
-              size: 56,
-              color: Colors.black87,
+              size: 48,
+              color: Colors.white,
             ).animate().scale(delay: delay + 200.ms, curve: Curves.easeOutBack),
             const SizedBox(height: 16),
             Text(
               title,
               style: const TextStyle(
-                fontSize: 20,
+                fontSize: 18,
                 fontWeight: FontWeight.bold,
-                color: Colors.black87,
+                color: Colors.white,
               ),
               textAlign: TextAlign.center,
             ),
-            const SizedBox(height: 8),
+            const SizedBox(height: 4),
             Text(
               subtitle,
               style: const TextStyle(
-                fontSize: 14,
-                color: Colors.black54,
+                fontSize: 13,
+                color: Colors.white70,
                 fontWeight: FontWeight.w500,
               ),
               textAlign: TextAlign.center,

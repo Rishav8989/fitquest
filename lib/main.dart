@@ -1,18 +1,13 @@
 import 'dart:io';
 
-
 import 'package:fitquest/screens/progress_screen.dart';
 import 'package:fitquest/services/app_state.dart';
 import 'package:fitquest/services/step_count_service.dart';
 import 'package:fitquest/theme/app_theme.dart';
 import 'package:flutter/material.dart';
 import 'package:fitquest/screens/dashboard_screen.dart';
-import 'package:fitquest/screens/workouts_screen.dart';
-import 'package:fitquest/screens/food_tracking_screen.dart';
 import 'package:fitquest/screens/profile_screen.dart';
 import 'package:fitquest/screens/edit_profile_screen.dart';
-import 'package:fitquest/screens/ai_food_questionnaire_screen.dart';
-import 'package:fitquest/screens/ai_exercise_questionnaire_screen.dart';
 import 'package:fitquest/screens/quick_add_screen.dart';
 import 'package:lucide_icons/lucide_icons.dart';
 import 'package:tutorial_coach_mark/tutorial_coach_mark.dart';
@@ -71,7 +66,7 @@ class MyApp extends StatelessWidget {
     return Consumer<ThemeProvider>(
       builder: (context, themeProvider, child) {
         return MaterialApp(
-          title: 'NutriQuest',
+          title: 'FitQuest',
           theme: AppTheme.light,
           darkTheme: AppTheme.dark,
           themeMode: themeProvider.themeMode,
@@ -98,8 +93,6 @@ class _HomeScreenState extends State<HomeScreen> {
   final GlobalKey _themeKey = GlobalKey();
   final GlobalKey _profileKey = GlobalKey();
   final GlobalKey _homeKey = GlobalKey();
-  final GlobalKey _workoutKey = GlobalKey();
-  final GlobalKey _foodKey = GlobalKey();
   final GlobalKey _progressKey = GlobalKey();
   final GlobalKey _fabKey = GlobalKey();
 
@@ -134,9 +127,7 @@ class _HomeScreenState extends State<HomeScreen> {
         content: const Text("Would you like a quick tour of the app features?"),
         actions: [
           TextButton(
-            onPressed: () {
-              Navigator.of(context).pop();
-            },
+            onPressed: () => Navigator.of(context).pop(),
             child: const Text("Skip All"),
           ),
           ElevatedButton(
@@ -163,12 +154,8 @@ class _HomeScreenState extends State<HomeScreen> {
       onClickTarget: (target) {
         if (target.identify == "HomeTab") {
           setState(() => _selectedIndex = 0);
-        } else if (target.identify == "WorkoutTab") {
-          setState(() => _selectedIndex = 1);
-        } else if (target.identify == "FoodTab") {
-          setState(() => _selectedIndex = 2);
         } else if (target.identify == "ProgressTab") {
-          setState(() => _selectedIndex = 3);
+          setState(() => _selectedIndex = 1);
         }
       },
       onClickOverlay: (target) {},
@@ -186,20 +173,14 @@ class _HomeScreenState extends State<HomeScreen> {
           TargetContent(
             align: ContentAlign.bottom,
             builder: (context, controller) {
-              return Column(
+              return const Column(
                 mainAxisSize: MainAxisSize.min,
                 crossAxisAlignment: CrossAxisAlignment.start,
-                children: const <Widget>[
-                  Text(
-                    "Theme Toggle",
-                    style: TextStyle(fontWeight: FontWeight.bold, color: Colors.white, fontSize: 20.0),
-                  ),
+                children: <Widget>[
+                  Text("Theme Toggle", style: TextStyle(fontWeight: FontWeight.bold, color: Colors.white, fontSize: 20.0)),
                   Padding(
                     padding: EdgeInsets.only(top: 10.0),
-                    child: Text(
-                      "Switch between light and dark mode here.",
-                      style: TextStyle(color: Colors.white),
-                    ),
+                    child: Text("Switch between light and dark mode here.", style: TextStyle(color: Colors.white)),
                   ),
                 ],
               );
@@ -216,20 +197,14 @@ class _HomeScreenState extends State<HomeScreen> {
           TargetContent(
             align: ContentAlign.bottom,
             builder: (context, controller) {
-              return Column(
+              return const Column(
                 mainAxisSize: MainAxisSize.min,
                 crossAxisAlignment: CrossAxisAlignment.start,
-                children: const <Widget>[
-                  Text(
-                    "User Profile",
-                    style: TextStyle(fontWeight: FontWeight.bold, color: Colors.white, fontSize: 20.0),
-                  ),
+                children: <Widget>[
+                  Text("User Profile", style: TextStyle(fontWeight: FontWeight.bold, color: Colors.white, fontSize: 20.0)),
                   Padding(
                     padding: EdgeInsets.only(top: 10.0),
-                    child: Text(
-                      "Access your profile settings, goals, and personal information.",
-                      style: TextStyle(color: Colors.white),
-                    ),
+                    child: Text("Access your profile settings, goals, and personal information.", style: TextStyle(color: Colors.white)),
                   ),
                 ],
               );
@@ -246,80 +221,14 @@ class _HomeScreenState extends State<HomeScreen> {
           TargetContent(
             align: ContentAlign.top,
             builder: (context, controller) {
-              return Column(
+              return const Column(
                 mainAxisSize: MainAxisSize.min,
                 crossAxisAlignment: CrossAxisAlignment.start,
-                children: const <Widget>[
-                  Text(
-                    "Dashboard",
-                    style: TextStyle(fontWeight: FontWeight.bold, color: Colors.white, fontSize: 20.0),
-                  ),
+                children: <Widget>[
+                  Text("Dashboard", style: TextStyle(fontWeight: FontWeight.bold, color: Colors.white, fontSize: 20.0)),
                   Padding(
                     padding: EdgeInsets.only(top: 10.0),
-                    child: Text(
-                      "Your daily summary of workouts, calories, and step counts.",
-                      style: TextStyle(color: Colors.white),
-                    ),
-                  ),
-                ],
-              );
-            },
-          ),
-        ],
-      ),
-    );
-    targets.add(
-      TargetFocus(
-        identify: "WorkoutTab",
-        keyTarget: _workoutKey,
-        contents: [
-          TargetContent(
-            align: ContentAlign.top,
-            builder: (context, controller) {
-              return Column(
-                mainAxisSize: MainAxisSize.min,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: const <Widget>[
-                  Text(
-                    "Workouts",
-                    style: TextStyle(fontWeight: FontWeight.bold, color: Colors.white, fontSize: 20.0),
-                  ),
-                  Padding(
-                    padding: EdgeInsets.only(top: 10.0),
-                    child: Text(
-                      "Track your exercises, routines, and physical activities.",
-                      style: TextStyle(color: Colors.white),
-                    ),
-                  ),
-                ],
-              );
-            },
-          ),
-        ],
-      ),
-    );
-    targets.add(
-      TargetFocus(
-        identify: "FoodTab",
-        keyTarget: _foodKey,
-        contents: [
-          TargetContent(
-            align: ContentAlign.top,
-            builder: (context, controller) {
-              return Column(
-                mainAxisSize: MainAxisSize.min,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: const <Widget>[
-                  Text(
-                    "Food Tracking",
-                    style: TextStyle(fontWeight: FontWeight.bold, color: Colors.white, fontSize: 20.0),
-                  ),
-                  Padding(
-                    padding: EdgeInsets.only(top: 10.0),
-                    child: Text(
-                      "Log your meals, count calories, and track macros.",
-                      style: TextStyle(color: Colors.white),
-                    ),
+                    child: Text("Your complete daily hub — nutrition, workouts, water, and sleep all in one place.", style: TextStyle(color: Colors.white)),
                   ),
                 ],
               );
@@ -336,20 +245,14 @@ class _HomeScreenState extends State<HomeScreen> {
           TargetContent(
             align: ContentAlign.top,
             builder: (context, controller) {
-              return Column(
+              return const Column(
                 mainAxisSize: MainAxisSize.min,
                 crossAxisAlignment: CrossAxisAlignment.start,
-                children: const <Widget>[
-                  Text(
-                    "Progress",
-                    style: TextStyle(fontWeight: FontWeight.bold, color: Colors.white, fontSize: 20.0),
-                  ),
+                children: <Widget>[
+                  Text("Progress", style: TextStyle(fontWeight: FontWeight.bold, color: Colors.white, fontSize: 20.0)),
                   Padding(
                     padding: EdgeInsets.only(top: 10.0),
-                    child: Text(
-                      "View your statistics, charts, and overall fitness journey.",
-                      style: TextStyle(color: Colors.white),
-                    ),
+                    child: Text("Track your BMI, body measurements, reports, and planner.", style: TextStyle(color: Colors.white)),
                   ),
                 ],
               );
@@ -367,20 +270,14 @@ class _HomeScreenState extends State<HomeScreen> {
           TargetContent(
             align: ContentAlign.top,
             builder: (context, controller) {
-              return Column(
+              return const Column(
                 mainAxisSize: MainAxisSize.min,
                 crossAxisAlignment: CrossAxisAlignment.start,
-                children: const <Widget>[
-                  Text(
-                    "Quick Add",
-                    style: TextStyle(fontWeight: FontWeight.bold, color: Colors.white, fontSize: 20.0),
-                  ),
+                children: <Widget>[
+                  Text("Quick Add", style: TextStyle(fontWeight: FontWeight.bold, color: Colors.white, fontSize: 20.0)),
                   Padding(
                     padding: EdgeInsets.only(top: 10.0),
-                    child: Text(
-                      "Tap here to quickly add a new workout or food log depending on the tab.",
-                      style: TextStyle(color: Colors.white),
-                    ),
+                    child: Text("Tap here to quickly log food, workouts, water, or sleep.", style: TextStyle(color: Colors.white)),
                   ),
                 ],
               );
@@ -393,8 +290,6 @@ class _HomeScreenState extends State<HomeScreen> {
 
   static const List<Widget> _widgetOptions = <Widget>[
     DashboardScreen(),
-    WorkoutsScreen(),
-    FoodTrackingScreen(),
     ProgressScreen(),
   ];
 
@@ -413,20 +308,13 @@ class _HomeScreenState extends State<HomeScreen> {
         actions: [
           IconButton(
             key: _themeKey,
-            onPressed: () {
-              themeProvider.toggleTheme();
-            },
-            icon: Icon(
-              themeProvider.themeMode == ThemeMode.light ? LucideIcons.moon : LucideIcons.sun,
-            ),
+            onPressed: () => themeProvider.toggleTheme(),
+            icon: Icon(themeProvider.themeMode == ThemeMode.light ? LucideIcons.moon : LucideIcons.sun),
           ),
           IconButton(
             key: _profileKey,
             onPressed: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) => const ProfileScreen()),
-              );
+              Navigator.push(context, MaterialPageRoute(builder: (context) => const ProfileScreen()));
             },
             icon: const Icon(LucideIcons.user),
           ),
@@ -440,10 +328,7 @@ class _HomeScreenState extends State<HomeScreen> {
           return FadeTransition(
             opacity: animation,
             child: SlideTransition(
-              position: Tween<Offset>(
-                begin: const Offset(0.03, 0),
-                end: Offset.zero,
-              ).animate(animation),
+              position: Tween<Offset>(begin: const Offset(0.03, 0), end: Offset.zero).animate(animation),
               child: child,
             ),
           );
@@ -463,32 +348,19 @@ class _HomeScreenState extends State<HomeScreen> {
             label: 'Home',
           ),
           BottomNavigationBarItem(
-            icon: Icon(LucideIcons.dumbbell, key: _workoutKey),
-            label: 'Workout',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(LucideIcons.utensilsCrossed, key: _foodKey),
-            label: 'Food',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(LucideIcons.map, key: _progressKey),
+            icon: Icon(LucideIcons.barChart2, key: _progressKey),
             label: 'Progress',
           ),
         ],
       ),
-      floatingActionButton: _AnimatedFAB(
-        key: _fabKey,
-        selectedIndex: _selectedIndex,
-        onPressed: () {
-          if (_selectedIndex == 0) {
-            Navigator.push(context, MaterialPageRoute(builder: (context) => const QuickAddScreen()));
-          } else if (_selectedIndex == 2) {
-            Navigator.push(context, MaterialPageRoute(builder: (context) => const AiFoodQuestionnaireScreen()));
-          } else if (_selectedIndex == 1) {
-            Navigator.push(context, MaterialPageRoute(builder: (context) => const AiExerciseQuestionnaireScreen()));
-          }
-        },
-      ),
+      floatingActionButton: _selectedIndex == 0
+          ? _AnimatedFAB(
+              key: _fabKey,
+              onPressed: () {
+                Navigator.push(context, MaterialPageRoute(builder: (context) => const QuickAddScreen()));
+              },
+            )
+          : null,
     );
   }
 }
@@ -496,11 +368,9 @@ class _HomeScreenState extends State<HomeScreen> {
 class _AnimatedFAB extends StatefulWidget {
   const _AnimatedFAB({
     super.key,
-    required this.selectedIndex,
     required this.onPressed,
   });
 
-  final int selectedIndex;
   final VoidCallback onPressed;
 
   @override
@@ -539,16 +409,9 @@ class _AnimatedFABState extends State<_AnimatedFAB>
         onTapUp: (_) => _controller.reverse(),
         onTapCancel: () => _controller.reverse(),
         onTap: widget.onPressed,
-        child: FloatingActionButton(
+        child: const FloatingActionButton(
           onPressed: null,
-          child: Icon(
-            widget.selectedIndex == 2
-                ? LucideIcons.utensilsCrossed
-                : widget.selectedIndex == 1
-                    ? LucideIcons.dumbbell
-                    : LucideIcons.plus,
-            size: 26,
-          ),
+          child: Icon(LucideIcons.plus, size: 26),
         ),
       ),
     );

@@ -2,8 +2,6 @@ import 'package:fitquest/screens/live_workout_screen.dart';
 import 'package:fitquest/services/app_state.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:fitquest/data/massive_datasets.dart';
-import 'dart:math';
 
 class AiExerciseQuestionnaireScreen extends StatefulWidget {
   const AiExerciseQuestionnaireScreen({super.key});

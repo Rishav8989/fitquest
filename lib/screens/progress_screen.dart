@@ -2,15 +2,15 @@ import 'package:fitquest/screens/bmi_calculator_screen.dart';
 import 'package:fitquest/screens/calendar_screen.dart';
 import 'package:fitquest/screens/measurements_screen.dart';
 import 'package:fitquest/screens/reports_dashboard_screen.dart';
-import 'package:fitquest/widgets/journey_map.dart';
-import 'package:fitquest/widgets/sleep_tracker.dart';
 import 'package:flutter/material.dart';
+import 'package:lucide_icons/lucide_icons.dart';
 
 class ProgressScreen extends StatelessWidget {
   const ProgressScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
+    final cs = Theme.of(context).colorScheme;
     return Scaffold(
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16.0),
@@ -25,85 +25,34 @@ class ProgressScreen extends StatelessWidget {
                   ?.copyWith(fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 24),
+            // Quick access cards
             Row(
               children: [
                 Expanded(
-                  child: InkWell(
+                  child: _ProgressActionCard(
+                    icon: LucideIcons.calculator,
+                    label: 'BMI Calculator',
+                    colors: [cs.primary, cs.secondary],
                     onTap: () {
                       Navigator.of(context).push(
-                        MaterialPageRoute(
-                          builder: (context) => const BmiCalculatorScreen(),
-                        ),
+                        MaterialPageRoute(builder: (context) => const BmiCalculatorScreen()),
                       );
                     },
-                    borderRadius: BorderRadius.circular(20),
-                    child: Container(
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(20),
-                        gradient: LinearGradient(
-                          colors: [
-                            Theme.of(context).colorScheme.primary,
-                            Theme.of(context).colorScheme.secondary,
-                          ],
-                          begin: Alignment.topLeft,
-                          end: Alignment.bottomRight,
-                        ),
-                      ),
-                      child: const Padding(
-                        padding: EdgeInsets.all(16.0),
-                        child: Column(
-                          children: [
-                            Text('🧮', style: TextStyle(fontSize: 32)),
-                            SizedBox(height: 8),
-                            Text(
-                              'BMI Calculator',
-                              style: TextStyle(color: Colors.white),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
                   ),
                 ),
-                const SizedBox(width: 16),
+                const SizedBox(width: 12),
                 Expanded(
-                  child: InkWell(
+                  child: _ProgressActionCard(
+                    icon: LucideIcons.ruler,
+                    label: 'Measurements',
+                    colors: [cs.secondary, cs.tertiary],
                     onTap: () {
                       Navigator.push(context, MaterialPageRoute(builder: (context) => const MeasurementsScreen()));
                     },
-                    borderRadius: BorderRadius.circular(20),
-                    child: Container(
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(20),
-                        gradient: LinearGradient(
-                          colors: [
-                            Theme.of(context).colorScheme.secondary,
-                            Theme.of(context).colorScheme.tertiary,
-                          ],
-                          begin: Alignment.topLeft,
-                          end: Alignment.bottomRight,
-                        ),
-                      ),
-                      child: const Padding(
-                        padding: EdgeInsets.all(16.0),
-                        child: Column(
-                          children: [
-                            Text('📏', style: TextStyle(fontSize: 32)),
-                            SizedBox(height: 8),
-                            Text(
-                              'Measurements',
-                              style: TextStyle(color: Colors.white),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
                   ),
                 ),
               ],
             ),
-            const SizedBox(height: 24),
-            const JourneyMap(),
             const SizedBox(height: 24),
             Text(
               'Reports',
@@ -117,22 +66,22 @@ class ProgressScreen extends StatelessWidget {
               child: Column(
                 children: [
                   ListTile(
-                    leading: const Icon(Icons.calendar_view_week),
+                    leading: Icon(LucideIcons.barChart2, color: cs.primary),
                     title: const Text('Weekly Status'),
-                    subtitle: const Text('View your steps and activity for the week'),
-                    trailing: const Icon(Icons.chevron_right),
+                    subtitle: const Text('View your weekly calorie and activity trends'),
+                    trailing: Icon(Icons.chevron_right, color: cs.onSurfaceVariant),
                     onTap: () {
                       Navigator.push(context, MaterialPageRoute(builder: (context) => const ReportsDashboardScreen()));
                     },
                   ),
                   const Divider(height: 1),
                   ListTile(
-                    leading: const Icon(Icons.calendar_month),
+                    leading: Icon(LucideIcons.lineChart, color: cs.primary),
                     title: const Text('Monthly Status'),
-                    subtitle: const Text('View your steps and activity for the month'),
-                    trailing: const Icon(Icons.chevron_right),
+                    subtitle: const Text('View your monthly trends and progress'),
+                    trailing: Icon(Icons.chevron_right, color: cs.onSurfaceVariant),
                     onTap: () {
-                      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Monthly report coming soon!')));
+                      Navigator.push(context, MaterialPageRoute(builder: (context) => const ReportsDashboardScreen()));
                     },
                   ),
                 ],
@@ -151,10 +100,10 @@ class ProgressScreen extends StatelessWidget {
               child: Column(
                 children: [
                   ListTile(
-                    leading: const Icon(Icons.event_available),
+                    leading: Icon(LucideIcons.calendarCheck, color: cs.primary),
                     title: const Text('Planner & Tasks'),
                     subtitle: const Text('Manage schedule, to-dos, and reminders'),
-                    trailing: const Icon(Icons.chevron_right),
+                    trailing: Icon(Icons.chevron_right, color: cs.onSurfaceVariant),
                     onTap: () {
                       Navigator.of(context).push(
                         MaterialPageRoute(builder: (context) => const CalendarScreen()),
@@ -165,8 +114,55 @@ class ProgressScreen extends StatelessWidget {
               ),
             ),
             const SizedBox(height: 24),
-            const SleepTracker(),
           ],
+        ),
+      ),
+    );
+  }
+}
+
+class _ProgressActionCard extends StatelessWidget {
+  final IconData icon;
+  final String label;
+  final List<Color> colors;
+  final VoidCallback onTap;
+
+  const _ProgressActionCard({
+    required this.icon,
+    required this.label,
+    required this.colors,
+    required this.onTap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return InkWell(
+      onTap: onTap,
+      borderRadius: BorderRadius.circular(20),
+      child: Container(
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(20),
+          gradient: LinearGradient(
+            colors: colors,
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+          ),
+        ),
+        child: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Column(
+            children: [
+              Icon(icon, size: 32, color: Colors.white),
+              const SizedBox(height: 8),
+              Text(
+                label,
+                style: const TextStyle(
+                  color: Colors.white,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );
